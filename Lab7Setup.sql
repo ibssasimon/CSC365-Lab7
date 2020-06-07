@@ -29,9 +29,3 @@ create table lab_7reservations(
     FOREIGN KEY(Room) references lab7_rooms(RoomCode)
 );
 
-
-
--- DML for lab7_rooms
-
-
--- DML for lab7_reservations
