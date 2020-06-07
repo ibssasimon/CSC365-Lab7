@@ -2,7 +2,7 @@
 -- CSC 365, Andrew Migler
 
 -- DDL for lab7 rooms
-create table lab7_rooms(
+create table if not exists lab7_rooms(
     char(5) RoomCode
     varchar(30) RoomName,
     int(11) Beds,
@@ -15,7 +15,7 @@ create table lab7_rooms(
 );
 
 -- DDL for lab7 reservations
-create table lab_7reservations(
+create table if not exists lab_7reservations(
     int(11) CODE,
     char(5) Room,
     DATE CheckIn,
@@ -28,4 +28,10 @@ create table lab_7reservations(
     PRIMARY KEY(CODE),
     FOREIGN KEY(Room) references lab7_rooms(RoomCode)
 );
+
+insert into lab7_rooms select * from INN.rooms;
+INSERT INTO lab7_reservations SELECT CODE, Room,
+   DATE_ADD(CheckIn, INTERVAL 9 YEAR),
+   DATE_ADD(Checkout, INTERVAL 9 YEAR),
+   Rate, LastName, FirstName, Adults, Kids FROM INN.reservations;
 
