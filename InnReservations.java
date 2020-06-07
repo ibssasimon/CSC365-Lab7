@@ -4,6 +4,7 @@ public class InnReservations {
 
   public static void main(String[] args) {
     Scanner reader = new Scanner(System.in);
+    FRequirements fr = new FRequirements();
     int selection = 0;
 
     while(selection != -1) {
@@ -23,23 +24,23 @@ public class InnReservations {
       switch(selection) {
         case 1:
             System.out.println("Proceeding to Rooms and Rates...");
-            FR1();
+            fr.FR1();
             break;
         case 2:
             System.out.println("Proceeding to Make a Reservation...");
-            FR2();
+            fr.FR2();
             break;
         case 3:
             System.out.println("Proceeding to Change Reservation...");
-            FR3();
+            fr.FR3();
             break;
         case 4:
             System.out.println("Proceeding to Cancel Reservation...");
-            FR4();
+            fr.FR4();
             break;
         case 5:
             System.out.println("Proceeding to Inn Revenue...");
-            FR5();
+            fr.FR5();
             break;
         case 6:
             System.out.println("Thanks! Please come again.");
@@ -47,25 +48,5 @@ public class InnReservations {
             break;
       }
     }
-  }
-
-  private static void FR5() {
-    System.out.println("TODO");
-  }
-
-  private static void FR4() {
-    System.out.println("TODO");
-  }
-
-  private static void FR3() {
-    System.out.println("TODO");
-  }
-
-  private static void FR2() {
-    System.out.println("TODO");
-  }
-
-  private static void FR1() {
-      System.out.println("TODO");
   }
 }
