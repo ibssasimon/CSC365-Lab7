@@ -16,49 +16,99 @@ public class FRequirements {
             return null;
         }
     }
+    // TODO (ibssasimon): FR5
     public void FR5() {
         try {
             Connection conn = establishConnection();
+
+            // build Statement using StringBuilder here
+
+            // con.setAutoCommit(false)
+
+            // execute SQL
+
+            // conn.commit()
+            // check results using ResultSet, NOTE: iterate using rs.next()
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("TODO");
     }
 
+    // TODO(louiseibuna): FR4
     public void FR4() {
         try {
             Connection conn = establishConnection();
+
+            // build Statement using StringBuilder here
+
+            // con.setAutoCommit(false)
+
+            // execute SQL
+            // conn.commit()
+
+
+            // check results using ResultSet, NOTE: iterate using rs.next()
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("TODO");
 
     }
 
+    // TODO(louiseibuna): FR3
     public void FR3() {
         try {
             Connection conn = establishConnection();
+
+            // build Statement using StringBuilder here
+
+            // con.setAutoCommit(false)
+
+            // execute SQL
+            // conn.commit()
+
+
+            // check results using ResultSet, NOTE: iterate using rs.next()
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("TODO");
     }
 
+    // TODO(ibssasimon): FR2
     public void FR2() {
         try {
             Connection conn = establishConnection();
+
+            // build Statement using StringBuilder here
+
+            // con.setAutoCommit(false)
+
+            // execute SQL
+            // conn.commit()
+
+
+            // check results using ResultSet, NOTE: iterate using rs.next()
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("TODO");
     }
 
+    // TODO(louiseibuna): FR1
     public void FR1() {
         try {
             Connection conn = establishConnection();
+
+            // build Statement using StringBuilder here
+
+            // con.setAutoCommit(false)
+
+            // execute SQL
+            // conn.commit()
+
+
+            // check results using ResultSet, NOTE: iterate using rs.next()
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("TODO");
     }
 }
