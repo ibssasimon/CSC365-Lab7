@@ -21,13 +21,26 @@ public class FRequirements {
         try {
             Connection conn = establishConnection();
 
-            // build Statement using StringBuilder here
+            // build sql query using StringBuilder here
+            StringBuilder sb = new StringBuilder();
 
-            // con.setAutoCommit(false)
+
+
+            // Starting transaction step -- con.setAutoCommit(false)
+            conn.setAutoCommit(false);
 
             // execute SQL
+            try (Statement st = conn.createStatement()) {
+                ResultSet res = st.executeQuery(sb.toString());
+                while (res.next()) {
+                    // analyze results
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
             // conn.commit()
+            conn.commit();
             // check results using ResultSet, NOTE: iterate using rs.next()
 
         } catch (SQLException e) {
@@ -80,10 +93,21 @@ public class FRequirements {
             Connection conn = establishConnection();
 
             // build Statement using StringBuilder here
+            StringBuilder sb = new StringBuilder();
 
-            // con.setAutoCommit(false)
+            // Start transaction step -- con.setAutoCommit(false)
+            conn.setAutoCommit(false);
 
             // execute SQL
+            try (Statement st = conn.createStatement()) {
+                ResultSet rs = st.executeQuery(sb.toString());
+
+                while (rs.next()) {
+                    // analyze results
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             // conn.commit()
 
 

@@ -1,6 +1,8 @@
 -- Created by Simon Ibssa, Louise Ibuna
 -- CSC 365, Andrew Migler
 
+drop table if exists lab7_rooms;
+drop table if exists lab7_reservations;
 -- DDL for lab7 rooms
 create table if not exists lab7_rooms(
     char(5) RoomCode
