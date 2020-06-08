@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Scanner;
 
 public class FRequirements {
     private Connection establishConnection() throws SQLException {
@@ -26,9 +27,6 @@ public class FRequirements {
 
 
 
-            // Starting transaction step -- con.setAutoCommit(false)
-            conn.setAutoCommit(false);
-
             // execute SQL
             try (Statement st = conn.createStatement()) {
                 ResultSet res = st.executeQuery(sb.toString());
@@ -39,8 +37,7 @@ public class FRequirements {
                 e.printStackTrace();
             }
 
-            // conn.commit()
-            conn.commit();
+
             // check results using ResultSet, NOTE: iterate using rs.next()
 
         } catch (SQLException e) {
@@ -89,14 +86,42 @@ public class FRequirements {
 
     // TODO(ibssasimon): FR2
     public void FR2() {
+        // Gather user input for FR2
+        String first;
+        String last;
+        String roomCode;
+        String begin;
+        String end;
+        int children;
+        int adults;
+        System.out.println("Please fill out the information below to complete your reservation request.");
+        Scanner scan = new Scanner(System.in);
+        System.out.println("First Name?: ");
+        first = scan.nextLine();
+        System.out.println("Last Name?: ");
+        last = scan.nextLine();
+        System.out.println("Room Code?: ");
+        roomCode = scan.nextLine();
+        System.out.println("Begin date? (YYYY-MM-DD): ");
+        begin = scan.nextLine();
+        System.out.println("End date? (YYYY-MM-DD): ");
+        end = scan.nextLine();
+        System.out.println("Number of children?: ");
+        children = scan.nextInt();
+        System.out.println("Number of adults?: ");
+        adults = scan.nextInt();
+
+        scan.close();
+
+        // select statement to see if there are any current reservations in that roomcode
         try {
             Connection conn = establishConnection();
 
             // build Statement using StringBuilder here
             StringBuilder sb = new StringBuilder();
+            sb.append("select * from lab7_reservations WHERE Room =");
+            sb.append(roomCode);
 
-            // Start transaction step -- con.setAutoCommit(false)
-            conn.setAutoCommit(false);
 
             // execute SQL
             try (Statement st = conn.createStatement()) {
@@ -108,10 +133,7 @@ public class FRequirements {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            // conn.commit()
 
-
-            // check results using ResultSet, NOTE: iterate using rs.next()
         } catch (SQLException e) {
             e.printStackTrace();
         }
