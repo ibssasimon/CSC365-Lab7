@@ -96,6 +96,8 @@ public class FRequirements {
         String end;
         int kids;
         int adults;
+        String bedType = "";
+        double rate = 0.0;
         System.out.println("Please fill out the information below to complete your reservation request.");
         Scanner scan = new Scanner(System.in);
         System.out.println("First Name?: ");
@@ -112,7 +114,6 @@ public class FRequirements {
         kids = scan.nextInt();
         System.out.println("Number of adults?: ");
         adults = scan.nextInt();
-        String rate = "NULL";
         scan.close();
 
 
@@ -121,12 +122,15 @@ public class FRequirements {
         * 1. Do I have to generate my own CODE(11) in order to insert into reservations?
         * 2. How do I efficiently query for bedType, RoomCode, without writing a TON of try/catch Statements?
         * 3. Bit confused on structure of Result Set. Is this all strings concatenated, or is iterating over a list and producing a single element?
+        * 4. How to get each month of the year to show up as column
         * */
         // select statement to see if there are any current reservations in that roomcode
         try {
             Connection conn = establishConnection();
 
             // build Statement using StringBuilder here
+
+            // find all reservations under user inputted roomcode
             StringBuilder sb = new StringBuilder();
             sb.append("select Room from lab7_reservations WHERE Room =");
             sb.append(roomCode);
@@ -140,6 +144,7 @@ public class FRequirements {
             // execute SQL
             try (Statement st = conn.createStatement()) {
                 ResultSet rs = st.executeQuery(sb.toString());
+
                 // build unique CODE(11)
                 int CODE = generateCode();
                 try (Statement randStat = conn.createStatement()) {
@@ -158,10 +163,24 @@ public class FRequirements {
                 // empty set, no rooms at all are occupied in that date frame
                 if(!rs.next()) {
                     try (Statement st1 = conn.createStatement()) {
+                        // find bedType, Rate
+                        StringBuilder temp = new StringBuilder("SELECT Rate, bedType from from reservations inner join rooms on reservations.Room = room.RoomCode and reservations.Room =");
+                        temp.append(roomCode);
+                        temp.append(");");
+                        ResultSet ratesAndBedTypes = st1.executeQuery(temp.toString());
+                        while(ratesAndBedTypes.next()) {
+                            String r = ratesAndBedTypes.getString("Rate");
+                            rate = Double.parseDouble(r);
+
+                            String bt = ratesAndBedTypes.getString("bedType");
+                            bedType = bt;
+                        }
 
                         StringBuilder sb1 = r2InsertIntoTable(CODE, roomCode, begin, end, rate, last, adults, kids);
                         st1.execute(sb1.toString());
-                        updateUserSuccess(first, last, roomCode, "bedType", begin, end, adults, kids);
+
+
+                        updateUserSuccess(first, last, roomCode, bedType, begin, end, adults, kids);
                     } catch(SQLException e) {
                         e.printStackTrace();
                     }
@@ -233,7 +252,7 @@ public class FRequirements {
         System.out.println("Could not add reservation (room occupied). Please try another set of options.");
     }
 
-    private StringBuilder r2InsertIntoTable(int CODE, String roomCode, String begin, String end, String rate, String last, int adults, int kids) {
+    private StringBuilder r2InsertIntoTable(int CODE, String roomCode, String begin, String end, double rate, String last, int adults, int kids) {
         StringBuilder sb1 = new StringBuilder("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, Lastname, Adults, Kids) VALUES ");
         sb1.append("(");
         sb1.append(CODE);
@@ -253,5 +272,28 @@ public class FRequirements {
         sb1.append(kids);
         sb1.append(");");
         return sb1;
+    }
+
+
+    public void setupTables() {
+        // Send SQL DDL and DML to DB
+        try {
+            Connection c = establishConnection();
+
+            try (Statement st = c.createStatement()) {
+                // DDL
+                st.executeQuery("drop table if exists lab7_rooms;");
+                st.executeQuery("drop table if exists lab7_reservations;");
+                st.executeQuery("create table if not exists lab7_rooms (char(5) RoomCode,\nvarchar(30) RoomName,\nint(11) Beds,\nvarchar(8) bedType,\nint(11) maxOcc,\nfloat basePrice,\nvarchar(20) decor,\nPRIMARY KEY(RoomCode),\nUNIQUE(RoomName)\n);");
+                st.executeQuery("create table if not exists lab_7reservations(\nint(11) CODE,\nchar(5) Room,\nDATE CheckIn,\nDATE CheckOut,\n float Rate,\nvarchar(15) LastName,\n varchar(15) FirstName,\nint(11) Adults,\nint(11) Kids,\n PRIMARY KEY(CODE),\n FOREIGN KEY(Room) references lab7_rooms(RoomCode)\n);");
+
+
+                // DML
+                st.executeQuery("insert into lab7_rooms select * from INN.rooms;\n");
+                st.executeQuery("INSERT INTO lab7_reservations SELECT CODE, Room,\nDATE_ADD(CheckIn, INTERVAL 9 YEAR),\nDATE_ADD(Checkout, INTERVAL 9 YEAR),\nRate, LastName, FirstName, Adults, Kids FROM INN.reservations;");
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -5,6 +5,7 @@ public class InnReservations {
   public static void main(String[] args) {
     Scanner reader = new Scanner(System.in);
     FRequirements fr = new FRequirements();
+    fr.setupTables();
     int selection = 0;
 
     while(selection != -1) {

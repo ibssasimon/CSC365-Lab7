@@ -5,7 +5,7 @@ drop table if exists lab7_rooms;
 drop table if exists lab7_reservations;
 -- DDL for lab7 rooms
 create table if not exists lab7_rooms(
-    char(5) RoomCode
+    char(5) RoomCode,
     varchar(30) RoomName,
     int(11) Beds,
     varchar(8) bedType,
