@@ -21,6 +21,34 @@ public class FRequirements {
     }
     // TODO (ibssasimon): FR5
     public void FR5() {
+
+        /*
+        FR5 QUERY
+
+with rev as (
+    select Room, round(sum(
+    case when month(Checkout) = 1 then datediff(Checkout, CheckIn) * rate else 0 end),0) as January,
+    round(sum(case when month(Checkout) = 2 then datediff(Checkout, CheckIn) * rate else 0 end),0) as February,
+    round(sum(case when month(Checkout) = 3 then datediff(Checkout, CheckIn) * rate else 0 end),0) as March,
+    round(sum(case when month(Checkout) = 4 then datediff(Checkout, CheckIn) * rate else 0 end),0) as April,
+    round(sum(case when month(Checkout) = 5 then datediff(Checkout, CheckIn) * rate else 0 end),0) as May,
+    round(sum(case when month(Checkout) = 6 then datediff(Checkout, CheckIn) * rate else 0 end),0) as June,
+    round(sum(case when month(Checkout) = 7 then datediff(Checkout, CheckIn) * rate else 0 end),0) as July,
+    round(sum(case when month(Checkout) = 8 then datediff(Checkout, CheckIn) * rate else 0 end),0) as August,
+    round(sum(case when month(Checkout) = 9 then datediff(Checkout, CheckIn) * rate else 0 end),0) as September,
+    round(sum(case when month(Checkout) = 10 then datediff(Checkout, CheckIn) * rate else 0 end),0) as October,
+    round(sum(case when month(Checkout) = 11 then datediff(Checkout, CheckIn) * rate else 0 end),0) as November,
+    round(sum(case when month(Checkout) = 12 then datediff(Checkout, CheckIn) * rate else 0 end),0) as December,
+    round(sum(datediff(Checkout, Checkin) * rate),0) as Annual
+    from reservations
+    group by Room
+)
+select * from rev
+union
+select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),
+sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;
+
+         */
         try {
             Connection conn = establishConnection();
 
@@ -120,9 +148,13 @@ public class FRequirements {
         /*
         * QUESTIONS:
         * 1. Do I have to generate my own CODE(11) in order to insert into reservations?
-        * 2. How do I efficiently query for bedType, RoomCode, without writing a TON of try/catch Statements?
-        * 3. Bit confused on structure of Result Set. Is this all strings concatenated, or is iterating over a list and producing a single element?
-        * 4. How to get each month of the year to show up as column
+        * 2. Do I have to generate my own Rate in order to insert into reservations? or should I use base price? Use base price.
+        * 3. How do I efficiently query for bedType, RoomCode, without writing a TON of try/catch Statements?
+        * 4. Bit confused on structure of Result Set. Is this all strings concatenated, or is iterating over a list and producing a single element?
+        * 5. How to get each month of the year to show up as column? Always confused on row --> column transformations in the class
+        *
+        *       able to do transformation in java
+        *
         * */
         // select statement to see if there are any current reservations in that roomcode
         try {
@@ -148,29 +180,32 @@ public class FRequirements {
                 // build unique CODE(11)
                 int CODE = generateCode();
                 try (Statement randStat = conn.createStatement()) {
-                    ResultSet codes = randStat.executeQuery("SELECT CODE from lab7_reservations;");
+                    ResultSet codes = randStat.executeQuery("SELECT max(CODE) from lab7_reservations;");
                     while(codes.next()) {
                         String code = codes.getString("CODE");
-                        if (code.contains(Character.toString(CODE))) {
-                            CODE = generateCode();
-                        }
+                        CODE = Integer.parseInt(code);
+                        CODE += 1;
                     }
 
                 } catch(SQLException e) {
                     e.printStackTrace();
                 }
+                // end of building unique CODE(11)
+
+
 
                 // empty set, no rooms at all are occupied in that date frame
                 if(!rs.next()) {
                     try (Statement st1 = conn.createStatement()) {
                         // find bedType, Rate
-                        StringBuilder temp = new StringBuilder("SELECT Rate, bedType from from reservations inner join rooms on reservations.Room = room.RoomCode and reservations.Room =");
+                        StringBuilder temp = new StringBuilder("SELECT basePrice, bedType from reservations inner join rooms on reservations.Room = rooms.RoomCode and reservations.Room = '");
                         temp.append(roomCode);
+                        temp.append("'");
                         temp.append(");");
                         ResultSet ratesAndBedTypes = st1.executeQuery(temp.toString());
                         while(ratesAndBedTypes.next()) {
-                            String r = ratesAndBedTypes.getString("Rate");
-                            rate = Double.parseDouble(r);
+                            String r = ratesAndBedTypes.getString("basePrice");
+                            rate = Float.parseFloat(r);
 
                             String bt = ratesAndBedTypes.getString("bedType");
                             bedType = bt;
@@ -197,7 +232,8 @@ public class FRequirements {
                     if(!allBookedRooms.contains(roomCode)) {
                         StringBuilder sb1 = r2InsertIntoTable(CODE, roomCode, begin, end, rate, last, adults, kids);
                         try (Statement st1 = conn.createStatement()) {
-                            st1.executeQuery(sb1.toString());
+                            st1.execute(sb1.toString());
+                            updateUserSuccess(first, last, roomCode, bedType, begin, end, adults, kids);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -247,6 +283,20 @@ public class FRequirements {
         System.out.println("End Date: " + end);
         System.out.println("Number of Adults: " + adults);
         System.out.println("Number of Kids: " + kids);
+        int totalCost = 0;
+
+
+        try {
+            Connection conn = establishConnection();
+
+            try(Statement st = conn.createStatement()) {
+                st.executeQuery("");
+            }catch (SQLException e) {
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     private void updateUserFailure() {
         System.out.println("Could not add reservation (room occupied). Please try another set of options.");
@@ -282,15 +332,16 @@ public class FRequirements {
 
             try (Statement st = c.createStatement()) {
                 // DDL
-                st.executeQuery("drop table if exists lab7_rooms;");
-                st.executeQuery("drop table if exists lab7_reservations;");
-                st.executeQuery("create table if not exists lab7_rooms (char(5) RoomCode,\nvarchar(30) RoomName,\nint(11) Beds,\nvarchar(8) bedType,\nint(11) maxOcc,\nfloat basePrice,\nvarchar(20) decor,\nPRIMARY KEY(RoomCode),\nUNIQUE(RoomName)\n);");
-                st.executeQuery("create table if not exists lab_7reservations(\nint(11) CODE,\nchar(5) Room,\nDATE CheckIn,\nDATE CheckOut,\n float Rate,\nvarchar(15) LastName,\n varchar(15) FirstName,\nint(11) Adults,\nint(11) Kids,\n PRIMARY KEY(CODE),\n FOREIGN KEY(Room) references lab7_rooms(RoomCode)\n);");
+                st.execute("drop table if exists lab7_rooms;");
+                st.execute("drop table if exists lab7_reservations;");
+                st.execute("create table if not exists lab7_rooms (char(5) RoomCode,\nvarchar(30) RoomName,\nint(11) Beds,\nvarchar(8) bedType,\nint(11) maxOcc,\nfloat basePrice,\nvarchar(20) decor,\nPRIMARY KEY(RoomCode),\nUNIQUE(RoomName)\n);");
+                st.execute("create table if not exists lab_7reservations(\nint(11) CODE,\nchar(5) Room,\nDATE CheckIn,\nDATE CheckOut,\n float Rate,\nvarchar(15) LastName,\n varchar(15) FirstName,\nint(11) Adults,\nint(11) Kids,\n PRIMARY KEY(CODE),\n FOREIGN KEY(Room) references lab7_rooms(RoomCode)\n);");
 
 
                 // DML
-                st.executeQuery("insert into lab7_rooms select * from INN.rooms;\n");
-                st.executeQuery("INSERT INTO lab7_reservations SELECT CODE, Room,\nDATE_ADD(CheckIn, INTERVAL 9 YEAR),\nDATE_ADD(Checkout, INTERVAL 9 YEAR),\nRate, LastName, FirstName, Adults, Kids FROM INN.reservations;");
+                // need to manually put in these datapoints
+                st.execute("insert into lab7_rooms select * from INN.rooms;\n");
+                st.execute("INSERT INTO lab7_reservations SELECT CODE, Room,\nDATE_ADD(CheckIn, INTERVAL 9 YEAR),\nDATE_ADD(Checkout, INTERVAL 9 YEAR),\nRate, LastName, FirstName, Adults, Kids FROM INN.reservations;");
             }
         } catch(SQLException e) {
             e.printStackTrace();
