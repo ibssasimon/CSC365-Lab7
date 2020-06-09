@@ -131,13 +131,28 @@ public class FRequirements {
             // execute SQL
             try(PreparedStatement pst = conn.PrepareStatement(sb.toString())) {
                 try(ResultSet rs = pst.executeQuery()) {
-                    System.out.format("%6s |%30s | %4s ")
+                    System.out.format("%6s |%30s |%4s |%8s |%3s |%10s |%20s |%10s |%15s |%15s |%10s",
+                                        "roomcode", "roomname", "beds", "bedType", "maxOcc", "basePrice", "decor", "popularRooms", "nextAvail", "LengthStay", "Outtie");
+                    System.out.println("------" + "-----------------------" + "---------" + "-----" + "------" + "-----" + "---------" + "------" + "------" + "-------" + "------");
+                    while(rs.next()) {
+                        String RoomCode = rs.getString("roomcode");
+                        String RoomName = rs.getString("roomname");
+                        int Beds = rs.getInt("beds");
+                        String bedType = rs.getString("bedType");
+                        int maxOcc = rs.getInt("maxOcc");
+                        float basePrice = rs.getFloat("basePrice");
+                        String decor = rs.getString("decor");
+                        double popularRooms = rs.getString("popularRooms");
+                        String NextAvailableDate = rs.getString("NextAvailableDate");
+                        String LengthStay = rs.getString("LengthStay");
+                        String Outtie = rs.getString("Outtie");
+
+                        System.out.format("%5s |%30s |%4d |%8s |%3d |%10.2f |%20s |%4.2f |%15s |%15s |%15s%n",
+                            RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor, Popularity, NextDateAvailable, LengthStay, Outtie);
+                    }
+
                 }
             }
-            // conn.commit()
-
-
-            // check results using ResultSet, NOTE: iterate using rs.next()
         } catch (SQLException e) {
             e.printStackTrace();
         }
