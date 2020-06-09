@@ -94,15 +94,46 @@ public class FRequirements {
     }
 
     // TODO(louiseibuna): FR1
-    public void FR1() {
+    public void FR1() throws SQLException {
         try {
             Connection conn = establishConnection();
 
-            // build Statement using StringBuilder here
+            //Spaces in between sb.append indicate sub blocks
+            StringBuilder sb = new StringBuilder("WITH popularRooms AS (");
+            sb.append("SELECT room, ROUND(SUM(DATEDIFF(CheckOut, CheckIn))/180, 2) p");
+            sb.append("FROM lab7_reservations");
+            sb.append("GROUP BY Room), ");
 
-            // con.setAutoCommit(false)
+            sb.append("NextAvailableDate AS (");
+            sb.append("SELECT room, MIN(CheckOut) AS Next");
+            sb.append("FROM lab7_reservations");
+            sb.append("WHERE CheckOut >= CURDATE()");
+            sb.append("GROUP BY Room),");
+
+            sb.append("LengthStays AS (");
+            sb.append("SELECT room, code, CheckIn, CheckOut, DATEDIFF(CheckOut, CheckIn) AS Length, ");
+            sb.append("MAX(CheckOut) OVER (PARTITION BY Room) AS LATEST");
+            sb.append("FROM lab7_reservations");
+            sb.append("WHERE CheckOut < CURDATE()");
+
+            sb.append("MostRecentRoom AS (");
+            sb.append("SELECT Room, Length, CheckOut");
+            sb.append("FROM LengthStays");
+            sb.append("WHERE CheckOut = Latest");
+
+            sb.append("SELECT r.*, p.p AS popularRooms, n.NextAvailableDate AS NextAvail, l.LengthStays AS Length, l.CheckOut AS Outtie");
+            sb.append("FROM Rooms");
+            sb.append("INNER JOIN popularRooms p ON r.RoomCode = p.Room");
+            sb.append("INNER JOIN NextAvailableDate n ON r.RoomCode = n.Room");
+            sb.append("INNER JOIN MostRecentRoom l ON RoomCode = l.Room");
+            sb.append("ORDER BY p.p DESC;")
 
             // execute SQL
+            try(PreparedStatement pst = conn.PrepareStatement(sb.toString())) {
+                try(ResultSet rs = pst.executeQuery()) {
+                    System.out.format("%6s |%30s | %4s ")
+                }
+            }
             // conn.commit()
 
 
