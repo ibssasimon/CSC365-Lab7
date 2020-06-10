@@ -305,7 +305,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         System.out.println("End Date: " + end);
         System.out.println("Number of Adults: " + adults);
         System.out.println("Number of Kids: " + kids);
-        int totalCost = 0;
+        double totalCost = 0;
 
 
         try {
@@ -320,6 +320,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             try(Statement st = conn.createStatement()) {
 
                 ResultSet rs = st.executeQuery(sb.toString());
+                R2Response r2Response = null;
                 while(rs.next()) {
                     String room = rs.getString("Room");
                     String checkin = rs.getString("CheckIn");
@@ -327,10 +328,12 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                     String r = rs.getString("Rate");
                     double rate = Double.parseDouble(r);
 
-                    R2Response r2Response = new R2Response(room, checkin, checkout, rate);
+                    r2Response =  new R2Response(room, checkin, checkout, rate);
+
 
                 }
-
+                totalCost = r2Response.computeTotalStay();
+                System.out.println("Total cost of stay: " + totalCost);
             }catch (SQLException e) {
 
             }
@@ -411,7 +414,8 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             this.checkout = checkout;
             this.rate = rate;
         }
-        public int computeTotalStay() {
+        public double computeTotalStay() {
+            double sum = 0;
             LocalDate checkInDate = LocalDate.parse(checkin);
             LocalDate checkOutDate = LocalDate.parse(checkout);
             ZoneId z = ZoneId.of( "America/Montreal" );
@@ -429,12 +433,13 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
                 if(dayOfWeek >= 2 && dayOfWeek <=6) {
                     // weekday case
+                    sum += (rate);
                 } else if (dayOfWeek == 0 || dayOfWeek == 7) {
                     // weekend case
-
+                    sum += (rate * 1.10);
                 }
             }
-            return 0;
+            return sum;
         }
         public String getRoom() {
             return room;
