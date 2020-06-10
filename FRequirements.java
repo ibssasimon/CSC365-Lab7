@@ -24,8 +24,7 @@ public class FRequirements {
 
         /*
         FR5 QUERY
-
-with rev as (
+           with rev as (
     select Room, round(sum(
     case when month(Checkout) = 1 then datediff(Checkout, CheckIn) * rate else 0 end),0) as January,
     round(sum(case when month(Checkout) = 2 then datediff(Checkout, CheckIn) * rate else 0 end),0) as February,
@@ -43,25 +42,47 @@ with rev as (
     from reservations
     group by Room
 )
-select * from rev
+select Room, January, February, March, April, May, June, July, August, September, October, November, December, Annual from rev
 union
 select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),
 sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;
 
          */
+
+        System.out.println("Month-By-Month overview of revenue: ");
         try {
             Connection conn = establishConnection();
 
-            // build sql query using StringBuilder here
-            StringBuilder sb = new StringBuilder();
+            // build sql query using static String object
+            String q = "with rev as (\nselect Room, round(sum(\ncase when month(Checkout) = 1 then datediff(Checkout, CheckIn) * rate else 0 end),0) as January,\nround(sum(case when month(Checkout) = 2 then datediff(Checkout, CheckIn) * rate else 0 end),0) as February,\nround(sum(case when month(Checkout) = 3 then datediff(Checkout, CheckIn) * rate else 0 end),0) as March,\n round(sum(case when month(Checkout) = 4 then datediff(Checkout, CheckIn) * rate else 0 end),0) as April,\n round(sum(case when month(Checkout) = 5 then datediff(Checkout, CheckIn) * rate else 0 end),0) as May,\n round(sum(case when month(Checkout) = 6 then datediff(Checkout, CheckIn) * rate else 0 end),0) as June,\n round(sum(case when month(Checkout) = 7 then datediff(Checkout, CheckIn) * rate else 0 end),0) as July,\n round(sum(case when month(Checkout) = 8 then datediff(Checkout, CheckIn) * rate else 0 end),0) as August,\n round(sum(case when month(Checkout) = 9 then datediff(Checkout, CheckIn) * rate else 0 end),0) as September,\n round(sum(case when month(Checkout) = 10 then datediff(Checkout, CheckIn) * rate else 0 end),0) as October,\n round(sum(case when month(Checkout) = 11 then datediff(Checkout, CheckIn) * rate else 0 end),0) as November,\n round(sum(case when month(Checkout) = 12 then datediff(Checkout, CheckIn) * rate else 0 end),0) as December,\n round(sum(datediff(Checkout, Checkin) * rate),0) as Annual\n from reservations\n group by Room\n )\n select Room, January, February, March, April, May, June, July, August, September, October, November, December, Annual from rev\n union\n select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),\n sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;";
 
 
 
             // execute SQL
             try (Statement st = conn.createStatement()) {
-                ResultSet res = st.executeQuery(sb.toString());
+                ResultSet res = st.executeQuery(q);
                 while (res.next()) {
                     // analyze results
+                    String room = res.getString("Room");
+                    String january = res.getString("January");
+                    String february = res.getString("February");
+                    String march = res.getString("March");
+                    String april = res.getString("April");
+                    String may = res.getString("May");
+                    String june = res.getString("June");
+                    String july = res.getString("July");
+                    String august = res.getString("August");
+                    String september = res.getString("September");
+                    String october = res.getString("October");
+                    String november = res.getString("November");
+                    String december = res.getString("December");
+                    String annual = res.getString("Annual");
+
+
+
+                    System.out.format("%s %s %s %s %s %s %s %s %s %s %s %s %s %s", room, january, february, march, april, may, june, july, august, september, october, november, december, annual);
+
+
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -147,13 +168,6 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
         /*
         * QUESTIONS:
-        * 1. Do I have to generate my own CODE(11) in order to insert into reservations?
-        * 2. Do I have to generate my own Rate in order to insert into reservations? or should I use base price? Use base price.
-        * 3. How do I efficiently query for bedType, RoomCode, without writing a TON of try/catch Statements?
-        * 4. Bit confused on structure of Result Set. Is this all strings concatenated, or is iterating over a list and producing a single element?
-        * 5. How to get each month of the year to show up as column? Always confused on row --> column transformations in the class
-        *
-        *       able to do transformation in java
         *
         * */
         // select statement to see if there are any current reservations in that roomcode
