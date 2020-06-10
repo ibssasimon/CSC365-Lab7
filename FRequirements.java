@@ -1,9 +1,17 @@
 import java.sql.*;
+import java.time.Instant;
+import java.util.Calendar;
 import java.util.Scanner;
 import java.util.Random;
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 
 public class FRequirements {
+    private final String JDBC_URL = "jdbc:h2:~/csc365_lab7";
+    private final String JDBC_USER = "";
+    private final String JDBC_PASSWORD = "";
     private Connection establishConnection() throws SQLException {
         // Create user name, password, url
         String url = System.getenv("HP_JDBC_URL");
@@ -12,7 +20,7 @@ public class FRequirements {
         // establish to DB
         Connection conn;
         try {
-            conn = DriverManager.getConnection(url, user, pass);
+            conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
             return conn;
         } catch(SQLException e) {
             e.printStackTrace();
@@ -302,9 +310,27 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
         try {
             Connection conn = establishConnection();
-
+            StringBuilder sb = new StringBuilder("SELECT Room, CheckIn, Checkout, Rate from lab7_reservations where Room = ");
+            sb.append(RoomCode);
+            sb.append("and FirstName = '");
+            sb.append(first);
+            sb.append("' and LastName = '");
+            sb.append(last);
+            sb.append("';");
             try(Statement st = conn.createStatement()) {
-                st.executeQuery("");
+
+                ResultSet rs = st.executeQuery(sb.toString());
+                while(rs.next()) {
+                    String room = rs.getString("Room");
+                    String checkin = rs.getString("CheckIn");
+                    String checkout = rs.getString("Checkout");
+                    String r = rs.getString("Rate");
+                    double rate = Double.parseDouble(r);
+
+                    R2Response r2Response = new R2Response(room, checkin, checkout, rate);
+
+                }
+
             }catch (SQLException e) {
 
             }
@@ -370,6 +396,48 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             }
         } catch(SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    private class R2Response {
+        public String room;
+        public String checkin;
+        public String checkout;
+        double rate;
+        public R2Response(String room, String checkin, String checkout, double rate) {
+            this.room = room;
+            this.checkin = checkin;
+            this.checkout = checkout;
+            this.rate = rate;
+        }
+        public int computeTotalStay() {
+            LocalDate checkInDate = LocalDate.parse(checkin);
+            LocalDate checkOutDate = LocalDate.parse(checkout);
+            ZoneId z = ZoneId.of( "America/Montreal" );
+
+
+            for(LocalDate date = checkInDate; date.isBefore(checkOutDate); date = date.plusDays(1)) {
+                Calendar c = Calendar.getInstance();
+                ZonedDateTime zoned_time = date.atStartOfDay(z);
+                Instant i = zoned_time.toInstant();
+
+                java.util.Date d = java.util.Date.from(i);
+                c.setTime(d);
+
+                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+
+                if(dayOfWeek >= 2 && dayOfWeek <=6) {
+                    // weekday case
+                } else if (dayOfWeek == 0 || dayOfWeek == 7) {
+                    // weekend case
+
+                }
+            }
+            return 0;
+        }
+        public String getRoom() {
+            return room;
         }
     }
 }
