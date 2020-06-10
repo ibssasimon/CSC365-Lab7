@@ -14,9 +14,6 @@ public class FRequirements {
     private final String JDBC_PASSWORD = "";
     private Connection establishConnection() throws SQLException {
         // Create user name, password, url
-        String url = System.getenv("HP_JDBC_URL");
-        String user = System.getenv("HP_JDBC_USER");
-        String pass = System.getenv("HP_JDBC_PW");
         // establish to DB
         Connection conn;
         try {
@@ -189,9 +186,13 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             sb.append("select Room from lab7_reservations WHERE Room =");
             sb.append(roomCode);
             sb.append(" and (CheckIn >= ");
+            sb.append("'");
             sb.append(begin);
+            sb.append("'");
             sb.append(" and CheckOut <= ");
+            sb.append("'");
             sb.append(end);
+            sb.append("'");
             sb.append(");");
 
             ArrayList<String> allBookedRooms = new ArrayList<String>();
@@ -223,7 +224,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                         StringBuilder temp = new StringBuilder("SELECT basePrice, bedType from reservations inner join rooms on reservations.Room = rooms.RoomCode and reservations.Room = '");
                         temp.append(roomCode);
                         temp.append("'");
-                        temp.append(");");
+                        temp.append(";");
                         ResultSet ratesAndBedTypes = st1.executeQuery(temp.toString());
                         while(ratesAndBedTypes.next()) {
                             String r = ratesAndBedTypes.getString("basePrice");
@@ -350,15 +351,23 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         sb1.append("(");
         sb1.append(CODE);
         sb1.append(",");
+        sb1.append("'");
         sb1.append(roomCode);
+        sb1.append("'");
         sb1.append(",");
+        sb1.append("'");
         sb1.append(begin);
+        sb1.append("'");
         sb1.append(",");
+        sb1.append("'");
         sb1.append(end);
+        sb1.append("'");
         sb1.append(",");
         sb1.append(rate);
         sb1.append(",");
+        sb1.append("'");
         sb1.append(last);
+        sb1.append("'");
         sb1.append(",");
         sb1.append(adults);
         sb1.append(",");
