@@ -126,10 +126,10 @@ public class FRequirements {
             sb.append("INNER JOIN popularRooms p ON r.RoomCode = p.Room");
             sb.append("INNER JOIN NextAvailableDate n ON r.RoomCode = n.Room");
             sb.append("INNER JOIN MostRecentRoom l ON RoomCode = l.Room");
-            sb.append("ORDER BY p.p DESC;")
+            sb.append("ORDER BY p.p DESC;");
 
             // execute SQL
-            try(PreparedStatement pst = conn.PrepareStatement(sb.toString())) {
+            try(PreparedStatement pst = conn.prepareStatement(sb.toString())) {
                 try(ResultSet rs = pst.executeQuery()) {
                     System.out.format("%6s |%30s |%4s |%8s |%3s |%10s |%20s |%10s |%15s |%15s |%10s",
                                         "roomcode", "roomname", "beds", "bedType", "maxOcc", "basePrice", "decor", "popularRooms", "nextAvail", "LengthStay", "Outtie");
@@ -142,7 +142,7 @@ public class FRequirements {
                         int maxOcc = rs.getInt("maxOcc");
                         float basePrice = rs.getFloat("basePrice");
                         String decor = rs.getString("decor");
-                        double popularRooms = rs.getString("popularRooms");
+                        String popularRooms = rs.getString("popularRooms");
                         String NextAvailableDate = rs.getString("NextAvailableDate");
                         String LengthStay = rs.getString("LengthStay");
                         String Outtie = rs.getString("Outtie");
