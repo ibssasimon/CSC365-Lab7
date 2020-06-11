@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class FRequirements {
     private Connection establishConnection() throws SQLException {
@@ -59,6 +62,103 @@ public class FRequirements {
     public void FR3() {
         try {
             Connection conn = establishConnection();
+            Scanner reader = new Scanner(System.in);
+            System.out.println("Enter reservation code: ");
+            String rsvpCode = reader.nextLine();
+
+            if(rsvpCode == null || rsvpCode.length() == 0) {
+                System.out.println("RSVP code required! Please try again.");
+                return;
+            }
+            //Insert information to fields
+            System.out.println("Fill out new information for the following fields. If you wish to not make a change on a field, hit Enter.");
+            
+            System.out.print("First Name: ");
+            String firstName = reader.nextLine();
+
+            System.out.print("Last Name: ");
+            String lastName = reader.nextLine();
+
+            System.out.print("Begin date (yyyy-mm-dd): ");
+            String beginDate = reader.nextLine();
+
+            System.out.print("End date (yyyy-mm-dd): ");
+            String endDate = reader.nextLine();
+
+            System.out.print("Number of children (-1 for no change): ");
+            Integer numChildren = Integer.valueOf(reader.nextLine());
+
+            System.out.print("Number of adults (-1 for no change): ");
+            Integer numAdults = Integer.valueOf(reader.nextLine());
+
+            List<Object> parameters = new ArrayList<Object>();
+
+            StringBuilder sb = new StringBuilder("UPDATE lab7_reservations SET ");
+            int param_count = 0;
+
+            if(!"".equalsIgnoreCase(firstName)) {
+                sb.append("FirstName = ? ");
+                param_count++;
+                parameters.add(firstName);
+            }
+
+            if(!"".equalsIgnoreCase(lastName)) {
+                if(param_count > 0) {
+                    sb.append(", ");
+                }
+                sb.append("lastName = ? ");
+                param_count++;
+                parameters.add(lastName);
+            }
+
+            if(!"".equalsIgnoreCase(beginDate)) {
+                if(param_count > 0) {
+                    sb.append(", ");
+                }
+                sb.append("startDate = ? ");
+                param_count++;
+                parameters.add(beginDate);
+            }
+
+            if(!"".equalsIgnoreCase(endDate)) {
+                if(param_count > 0) {
+                    sb.append(", ");
+                }
+                sb.append("endDate = ? ");
+                param_count++;
+                parameters.add(endDate);
+            }
+
+            if(numChildren >= 0) {
+                if(param_count > 0) {
+                    sb.append(", ");
+                }
+                sb.append("Number of Kids = ? ");
+                param_count++;
+                parameters.add(numChildren);
+            }
+
+            if(numAdults > 0) {
+                if(param_count > 0) {
+                    sb.append(", ");
+                }
+                sb.append("Number of Adults = ? ");
+                param_count++;
+                parameters.add(numAdults);
+            }
+
+            sb.append("WHERE CODE = ? AND ");
+            sb.append("NOT EXISTS (SELECT * FROM");
+            sb.append("(SELECT * FROM lab7_reservations as r1 ");
+            sb.append("WHERE CODE = ?) dates ");
+            sb.append("INNER JOIN ");
+            sb.append("(SELEECT * from lab7_reservations as r2 ");
+            sb.append("WHERE CODE != ?) OTHERS ");
+            sb.append("ON (");
+            parameters.add(rsvpCode);
+            parameters.add(rsvpCode);
+            parameters.add(rsvpCode);
+            
 
             // build Statement using StringBuilder here
 
