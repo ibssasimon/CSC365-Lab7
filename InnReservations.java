@@ -1,10 +1,11 @@
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class InnReservations {
 
-  public static void main(String[] args) {
-    Scanner reader = new Scanner(System.in);
-    FRequirements fr = new FRequirements();
+  public static void main(final String[] args) throws SQLException {
+    final Scanner reader = new Scanner(System.in);
+    final FRequirements fr = new FRequirements();
     int selection = 0;
 
     while(selection != -1) {
@@ -47,6 +48,7 @@ public class InnReservations {
             selection = -1;
             break;
       }
+      reader.close();
     }
   }
 }

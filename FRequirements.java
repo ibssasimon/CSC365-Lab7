@@ -148,7 +148,7 @@ public class FRequirements {
                         String Outtie = rs.getString("Outtie");
 
                         System.out.format("%5s |%30s |%4d |%8s |%3d |%10.2f |%20s |%4.2f |%15s |%15s |%15s%n",
-                            RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor, Popularity, NextDateAvailable, LengthStay, Outtie);
+                            RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor, popularRooms, NextAvailableDate, LengthStay, Outtie);
                     }
 
                 }
