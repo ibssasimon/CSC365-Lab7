@@ -59,7 +59,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             Connection conn = establishConnection();
 
             // build sql query using static String object
-            String q = "with rev as (\nselect Room, round(sum(\ncase when month(Checkout) = 1 then datediff(Checkout, CheckIn) * rate else 0 end),0) as January,\nround(sum(case when month(Checkout) = 2 then datediff(Checkout, CheckIn) * rate else 0 end),0) as February,\nround(sum(case when month(Checkout) = 3 then datediff(Checkout, CheckIn) * rate else 0 end),0) as March,\n round(sum(case when month(Checkout) = 4 then datediff(Checkout, CheckIn) * rate else 0 end),0) as April,\n round(sum(case when month(Checkout) = 5 then datediff(Checkout, CheckIn) * rate else 0 end),0) as May,\n round(sum(case when month(Checkout) = 6 then datediff(Checkout, CheckIn) * rate else 0 end),0) as June,\n round(sum(case when month(Checkout) = 7 then datediff(Checkout, CheckIn) * rate else 0 end),0) as July,\n round(sum(case when month(Checkout) = 8 then datediff(Checkout, CheckIn) * rate else 0 end),0) as August,\n round(sum(case when month(Checkout) = 9 then datediff(Checkout, CheckIn) * rate else 0 end),0) as September,\n round(sum(case when month(Checkout) = 10 then datediff(Checkout, CheckIn) * rate else 0 end),0) as October,\n round(sum(case when month(Checkout) = 11 then datediff(Checkout, CheckIn) * rate else 0 end),0) as November,\n round(sum(case when month(Checkout) = 12 then datediff(Checkout, CheckIn) * rate else 0 end),0) as December,\n round(sum(datediff(Checkout, Checkin) * rate),0) as Annual\n from reservations\n group by Room\n )\n select Room, January, February, March, April, May, June, July, August, September, October, November, December, Annual from rev\n union\n select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),\n sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;";
+            String q = "with rev as (\nselect Room, round(sum(\ncase when month(Checkout) = 1 then datediff(Checkout, CheckIn) * rate else 0 end),0) as January,\nround(sum(case when month(Checkout) = 2 then datediff(Checkout, CheckIn) * rate else 0 end),0) as February,\nround(sum(case when month(Checkout) = 3 then datediff(Checkout, CheckIn) * rate else 0 end),0) as March,\n round(sum(case when month(Checkout) = 4 then datediff(Checkout, CheckIn) * rate else 0 end),0) as April,\n round(sum(case when month(Checkout) = 5 then datediff(Checkout, CheckIn) * rate else 0 end),0) as May,\n round(sum(case when month(Checkout) = 6 then datediff(Checkout, CheckIn) * rate else 0 end),0) as June,\n round(sum(case when month(Checkout) = 7 then datediff(Checkout, CheckIn) * rate else 0 end),0) as July,\n round(sum(case when month(Checkout) = 8 then datediff(Checkout, CheckIn) * rate else 0 end),0) as August,\n round(sum(case when month(Checkout) = 9 then datediff(Checkout, CheckIn) * rate else 0 end),0) as September,\n round(sum(case when month(Checkout) = 10 then datediff(Checkout, CheckIn) * rate else 0 end),0) as October,\n round(sum(case when month(Checkout) = 11 then datediff(Checkout, CheckIn) * rate else 0 end),0) as November,\n round(sum(case when month(Checkout) = 12 then datediff(Checkout, CheckIn) * rate else 0 end),0) as December,\n round(sum(datediff(Checkout, Checkin) * rate),0) as Annual\n from lab7_reservations\n group by Room\n )\n select Room, January, February, March, April, May, June, July, August, September, October, November, December, Annual from rev\n union\n select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),\n sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;";
 
 
 
@@ -183,8 +183,9 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
             // find all reservations under user inputted roomcode
             StringBuilder sb = new StringBuilder();
-            sb.append("select Room from lab7_reservations WHERE Room =");
+            sb.append("select Room from lab7_reservations WHERE Room ='");
             sb.append(roomCode);
+            sb.append("'");
             sb.append(" and (CheckIn >= ");
             sb.append("'");
             sb.append(begin);
@@ -221,7 +222,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                 if(!rs.next()) {
                     try (Statement st1 = conn.createStatement()) {
                         // find bedType, Rate
-                        StringBuilder temp = new StringBuilder("SELECT basePrice, bedType from reservations inner join rooms on reservations.Room = rooms.RoomCode and reservations.Room = '");
+                        StringBuilder temp = new StringBuilder("SELECT basePrice, bedType from lab7_reservations inner join lab7_rooms on lab7_reservations.Room = lab7_rooms.RoomCode and lab7_reservations.Room = '");
                         temp.append(roomCode);
                         temp.append("'");
                         temp.append(";");
@@ -327,7 +328,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                     String checkin = rs.getString("CheckIn");
                     String checkout = rs.getString("Checkout");
                     String r = rs.getString("Rate");
-                    double rate = Double.parseDouble(r);
+                    float rate = Float.parseFloat(r);
 
                     r2Response =  new R2Response(room, checkin, checkout, rate);
 
@@ -417,14 +418,14 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         public String checkin;
         public String checkout;
         double rate;
-        public R2Response(String room, String checkin, String checkout, double rate) {
+        public R2Response(String room, String checkin, String checkout, float rate) {
             this.room = room;
             this.checkin = checkin;
             this.checkout = checkout;
             this.rate = rate;
         }
-        public double computeTotalStay() {
-            double sum = 0;
+        public float computeTotalStay() {
+            float sum = 0;
             LocalDate checkInDate = LocalDate.parse(checkin);
             LocalDate checkOutDate = LocalDate.parse(checkout);
             ZoneId z = ZoneId.of( "America/Montreal" );
