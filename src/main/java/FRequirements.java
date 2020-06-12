@@ -581,11 +581,26 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             try (Statement st = c.createStatement()) {
                 // DDL
 
+                st.execute("drop table if exists lab7_rooms;");
+                st.execute("create table lab7_rooms (RoomCode char(5) PRIMARY KEY,\nRoomName varchar(30),\nBeds int(11),\nbedType varchar(8),\nmaxOcc int(11),\nbasePrice float,\ndecor varchar(20),\nPRIMARY KEY(RoomCode),\nUNIQUE(RoomName)\n);");
+                st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('AOB', 'Abscond or bolster', 2, 'Queen', 4, 175, 'traditional');");
+                st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('CAS', 'Convoke and sanguine', 2, 'King', 4, 175, 'traditional');");
+                st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('FNA', 'Frugal not apropos', 2, 'King', 4, 250, 'traditional');");
+                st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('HBB', 'Harbinger but bequest', 1, 'Queen', 2, 100, 'modern');");
+                st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('IBD', 'Immutable before decorum', 2, 'Queen', 4, 150, 'rustic');");
 
-                //st.execute("drop table if exists lab7_reservations;");
-                //st.execute("drop table if exists lab7_rooms;");
-                st.execute("create table if not exists lab7_rooms (RoomCode char(5),\nRoomName varchar(30),\nBeds int(11),\nbedType varchar(8),\nmaxOcc int(11),\nbasePrice float,\ndecor varchar(20),\nPRIMARY KEY(RoomCode),\nUNIQUE(RoomName)\n);");
-                st.execute("create table if not exists lab7_reservations (\nCODE int(11),\nRoom char(5),\nCheckIn DATE,\nCheckOut DATE,\nRate float,\nLastName varchar(15),\nFirstName varchar(15),\nAdults int(11),\nKids int(11),\n PRIMARY KEY(CODE),\n FOREIGN KEY(Room) references lab7_rooms(RoomCode)\n);");
+
+
+
+
+                st.execute("drop table if exists lab7_reservations;");
+                st.execute("create table lab7_reservations (\nCODE int(11),\nRoom char(5),\nCheckIn DATE,\nCheckOut DATE,\nRate float,\nLastName varchar(15),\nFirstName varchar(15),\nAdults int(11),\nKids int(11),\n PRIMARY KEY(CODE),\n FOREIGN KEY(Room) references lab7_rooms(RoomCode)\n);");
+                st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10105, 'HBB', '2010-10-23', '2010-10-25', 100, 'SELBIG', 'CONRAD', 1, 0);");
+                st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10183, 'IBD', '2010-09-19', '2010-09-20', 150, 'GABLER', 'DOLLIE', 2, 0);");
+                st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10489, 'AOB', '2010-02-02', '2010-02-05', 218.75, 'CARISTO', 'MARKITA', 2, 1);");
+                st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10574, 'FNA', '2010-11-26', '2010-12-03', 287.5, 'SWEAZY', 'ROY', 2, 1);");
+                st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10990, 'CAS', '2010-09-21', '2010-09-27', 175, 'TRACHSEL', 'DAMIEN', 1, 3);");
+
 
 
 
@@ -593,18 +608,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                 // DML
 
                 // need to manually put in these datapoints
-                    st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('AOB', 'Abscond or bolster', 2, 'Queen', 4, 175, 'traditional');");
-                    st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('CAS', 'Convoke and sanguine', 2, 'King', 4, 175, 'traditional');");
-                    st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('FNA', 'Frugal not apropos', 2, 'King', 4, 250, 'traditional');");
-                    st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('HBB', 'Harbinger but bequest', 1, 'Queen', 2, 100, 'modern');");
-                    st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('IBD', 'Immutable before decorum', 2, 'Queen', 4, 150, 'rustic');");
 
-
-                    st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10105, 'HBB', '2010-10-23', '2010-10-25', 100, 'SELBIG', 'CONRAD', 1, 0);");
-                    st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10183, 'IBD', '2010-09-19', '2010-09-20', 150, 'GABLER', 'DOLLIE', 2, 0);");
-                    st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10489, 'AOB', '2010-02-02', '2010-02-05', 218.75, 'CARISTO', 'MARKITA', 2, 1);");
-                    st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10574, 'FNA', '2010-11-26', '2010-12-03', 287.5, 'SWEAZY', 'ROY', 2, 1);");
-                    st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10990, 'CAS', '2010-09-21', '2010-09-27', 175, 'TRACHSEL', 'DAMIEN', 1, 3);");
 
 
             }
