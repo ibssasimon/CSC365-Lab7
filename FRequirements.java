@@ -6,15 +6,15 @@ import java.util.Scanner;
 public class FRequirements {
     private Connection establishConnection() throws SQLException {
         // Create user name, password, url
-        String url = System.getenv("HP_JDBC_URL");
-        String user = System.getenv("HP_JDBC_USER");
-        String pass = System.getenv("HP_JDBC_PW");
+        final String url = System.getenv("HP_JDBC_URL");
+        final String user = System.getenv("HP_JDBC_USER");
+        final String pass = System.getenv("HP_JDBC_PW");
         // establish to DB
         Connection conn;
         try {
             conn = DriverManager.getConnection(url, user, pass);
             return conn;
-        } catch(SQLException e) {
+        } catch(final SQLException e) {
             e.printStackTrace();
             return null;
         }
@@ -22,7 +22,7 @@ public class FRequirements {
     // TODO (ibssasimon): FR5
     public void FR5() {
         try {
-            Connection conn = establishConnection();
+            final Connection conn = establishConnection();
 
             // build Statement using StringBuilder here
 
@@ -33,7 +33,7 @@ public class FRequirements {
             // conn.commit()
             // check results using ResultSet, NOTE: iterate using rs.next()
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
@@ -41,30 +41,46 @@ public class FRequirements {
     // TODO(louiseibuna): FR4
     public void FR4() {
         try {
-            Connection conn = establishConnection();
+            final Connection conn = establishConnection();
 
-            // build Statement using StringBuilder here
+            Scanner reader = new Scanner(System.in);
 
-            // con.setAutoCommit(false)
+            System.out.println("Enter your reservation code to cancel: ");
+            int code = reader.nextInt();
+            String confirmCancel = reader.nextLine();
 
-            // execute SQL
-            // conn.commit()
+            if(confirmCancel.equals("yes") || confirmCancel.equals("YES") || confirmCancel.equals("Yes")) {
+                PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM lab7_reservations " +
+                    "WHERE Code = ?"
+                );
+                int res = stmt.executeUpdate();
+                if(res >= 1) {
+                    System.out.println("Reservation cancelled");
+                    return;
+                }
+                else {
+                    System.out.println("No reservation code found. Please try again.");
+                    return;
+                }
+            }
 
 
             // check results using ResultSet, NOTE: iterate using rs.next()
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
 
     }
 
+    //TODO may change
     // TODO(louiseibuna): FR3
     public void FR3() {
         try {
-            Connection conn = establishConnection();
-            Scanner reader = new Scanner(System.in);
+            final Connection conn = establishConnection();
+            final Scanner reader = new Scanner(System.in);
             System.out.println("Enter reservation code: ");
-            String rsvpCode = reader.nextLine();
+            final String rsvpCode = reader.nextLine();
 
             if(rsvpCode == null || rsvpCode.length() == 0) {
                 System.out.println("RSVP code required! Please try again.");
@@ -74,26 +90,26 @@ public class FRequirements {
             System.out.println("Fill out new information for the following fields. If you wish to not make a change on a field, hit Enter.");
             
             System.out.print("First Name: ");
-            String firstName = reader.nextLine();
+            final String firstName = reader.nextLine();
 
             System.out.print("Last Name: ");
-            String lastName = reader.nextLine();
+            final String lastName = reader.nextLine();
 
             System.out.print("Begin date (yyyy-mm-dd): ");
-            String beginDate = reader.nextLine();
+            final String beginDate = reader.nextLine();
 
             System.out.print("End date (yyyy-mm-dd): ");
-            String endDate = reader.nextLine();
+            final String endDate = reader.nextLine();
 
             System.out.print("Number of children (-1 for no change): ");
-            Integer numChildren = Integer.valueOf(reader.nextLine());
+            final Integer numChildren = Integer.valueOf(reader.nextLine());
 
             System.out.print("Number of adults (-1 for no change): ");
-            Integer numAdults = Integer.valueOf(reader.nextLine());
+            final Integer numAdults = Integer.valueOf(reader.nextLine());
 
-            List<Object> parameters = new ArrayList<Object>();
+            final List<Object> parameters = new ArrayList<Object>();
 
-            StringBuilder sb = new StringBuilder("UPDATE lab7_reservations SET ");
+            final StringBuilder sb = new StringBuilder("UPDATE lab7_reservations SET ");
             int param_count = 0;
 
             if(!"".equalsIgnoreCase(firstName)) {
@@ -156,28 +172,80 @@ public class FRequirements {
             sb.append("WHERE CODE != ?) OTHERS ");
             sb.append("ON (");
             parameters.add(rsvpCode);
-            parameters.add(rsvpCode);
-            parameters.add(rsvpCode);
-            
 
-            // build Statement using StringBuilder here
-
-            // con.setAutoCommit(false)
-
-            // execute SQL
-            // conn.commit()
-
-
-            // check results using ResultSet, NOTE: iterate using rs.next()
-        } catch (SQLException e) {
+            if(!"".equalsIgnoreCase(beginDate)) {
+                sb.append("? ");
+                parameters.add(beginDate);
+             }
+             else {
+                sb.append("dates.checkin ");
+             }
+             sb.append("< others.checkout) and (");
+    
+             if(!"".equalsIgnoreCase(endDate)) {
+                sb.append("? ");
+                parameters.add(endDate);
+             }
+             else {
+                sb.append("dates.checkout ");
+             }
+             sb.append("> others.checkin) and dates.room = others.room "); 
+             sb.append("and ");
+    
+             if(!"".equalsIgnoreCase(beginDate)) {
+                sb.append("? ");
+                parameters.add(beginDate);
+             }
+             else {
+                sb.append("dates.checkin ");
+             }
+             sb.append("< ");
+    
+             if(!"".equalsIgnoreCase(endDate)) {
+                sb.append("? );");
+                parameters.add(endDate);
+             }
+             else {
+                sb.append("dates.checkout); ");
+             }
+    
+             if(param_count == 0) return;
+             try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
+                int i = 1;
+                for (final Object p : parameters) {
+                   pstmt.setObject(i++, p);
+                }
+                
+                final int res = pstmt.executeUpdate();
+                
+             } 
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
+    private boolean execute_query_r3(Connection conn, StringBuilder sb, List<Object> params, String resCode) throws SQLException {
+      
+        try (PreparedStatement pstmt = conn.prepareStatement(sb.toString())) {
+           int i = 1;
+           for (final Object p : params) {
+              pstmt.setObject(i++, p);
+           }
+           
+           // Try finding any matching room
+           try (ResultSet rs = pstmt.executeQuery()) {
+              System.out.println("Checking for conflicting dates");
+              while (rs.next())
+                 if (!resCode.equals(rs.getString("code")))
+                    return false;
+              return true;
+           }
+        }
+     }
 
     // TODO(ibssasimon): FR2
     public void FR2() {
         try {
-            Connection conn = establishConnection();
+            final Connection conn = establishConnection();
 
             // build Statement using StringBuilder here
 
@@ -188,7 +256,7 @@ public class FRequirements {
 
 
             // check results using ResultSet, NOTE: iterate using rs.next()
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
@@ -196,10 +264,10 @@ public class FRequirements {
     // TODO(louiseibuna): FR1
     public void FR1() throws SQLException {
         try {
-            Connection conn = establishConnection();
+            final Connection conn = establishConnection();
 
             //Spaces in between sb.append indicate sub blocks
-            StringBuilder sb = new StringBuilder("WITH popularRooms AS (");
+            final StringBuilder sb = new StringBuilder("WITH popularRooms AS (");
             sb.append("SELECT room, ROUND(SUM(DATEDIFF(CheckOut, CheckIn))/180, 2) p");
             sb.append("FROM lab7_reservations");
             sb.append("GROUP BY Room), ");
@@ -235,17 +303,17 @@ public class FRequirements {
                                         "roomcode", "roomname", "beds", "bedType", "maxOcc", "basePrice", "decor", "popularRooms", "nextAvail", "LengthStay", "Outtie");
                     System.out.println("------" + "-----------------------" + "---------" + "-----" + "------" + "-----" + "---------" + "------" + "------" + "-------" + "------");
                     while(rs.next()) {
-                        String RoomCode = rs.getString("roomcode");
-                        String RoomName = rs.getString("roomname");
-                        int Beds = rs.getInt("beds");
-                        String bedType = rs.getString("bedType");
-                        int maxOcc = rs.getInt("maxOcc");
-                        float basePrice = rs.getFloat("basePrice");
-                        String decor = rs.getString("decor");
-                        String popularRooms = rs.getString("popularRooms");
-                        String NextAvailableDate = rs.getString("NextAvailableDate");
-                        String LengthStay = rs.getString("LengthStay");
-                        String Outtie = rs.getString("Outtie");
+                        final String RoomCode = rs.getString("roomcode");
+                        final String RoomName = rs.getString("roomname");
+                        final int Beds = rs.getInt("beds");
+                        final String bedType = rs.getString("bedType");
+                        final int maxOcc = rs.getInt("maxOcc");
+                        final float basePrice = rs.getFloat("basePrice");
+                        final String decor = rs.getString("decor");
+                        final String popularRooms = rs.getString("popularRooms");
+                        final String NextAvailableDate = rs.getString("NextAvailableDate");
+                        final String LengthStay = rs.getString("LengthStay");
+                        final String Outtie = rs.getString("Outtie");
 
                         System.out.format("%5s |%30s |%4d |%8s |%3d |%10.2f |%20s |%4.2f |%15s |%15s |%15s%n",
                             RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor, popularRooms, NextAvailableDate, LengthStay, Outtie);
@@ -253,7 +321,7 @@ public class FRequirements {
 
                 }
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
