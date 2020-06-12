@@ -113,14 +113,17 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
             System.out.println("Enter your reservation code to cancel: ");
             int code = reader.nextInt();
+            reader.nextLine();
+            System.out.println("Are you sure you want to cancel? ");
+
             String confirmCancel = reader.nextLine();
 
-            System.out.println("Are you sure you want to cancel? ");
             if(confirmCancel.equals("yes") || confirmCancel.equals("YES") || confirmCancel.equals("Yes")) {
                 PreparedStatement stmt = conn.prepareStatement(
                         "DELETE FROM lab7_reservations " +
                                 "WHERE Code = ?"
                 );
+                stmt.setInt(1, code);
                 int res = stmt.executeUpdate();
                 if(res >= 1) {
                     System.out.println("Reservation cancelled");
@@ -285,19 +288,19 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
             StringBuilder sb = new StringBuilder("with roomAvailability as ( ");
             sb.append("select room, greatest(curdate(), max(checkout)) as nextAvailableCheckIn");
-            sb.append("from lab7_reservations res");
-            sb.append("group by room");
+            sb.append(" from lab7_reservations res");
+            sb.append(" group by room)");
 
-            sb.append("select roomcode, roomname, beds, bedtype, maxocc, baseprice, decor, nextAvailableCheckIn ");
+            sb.append(" select roomcode, roomname, beds, bedtype, maxocc, baseprice, decor, nextAvailableCheckIn ");
             sb.append("from lab7_rooms rooms");
-            sb.append("left outer join roomAvailability ra");
-            sb.append("on rooms.roomcode = ra.room");
-            sb.append("order by roomcode asc;");
+            sb.append(" left outer join roomAvailability ra");
+            sb.append(" on rooms.roomcode = ra.room");
+            sb.append(" order by roomcode asc;");
 
             // execute SQL
             try(PreparedStatement pst = conn.prepareStatement(sb.toString())) {
                 try(ResultSet rs = pst.executeQuery()) {
-                    System.out.format("%6s |%30s |%4s |%8s |%3s |%10s |%20s |%10s |%15s |%15s |%10s",
+                    System.out.format("%6s |%30s |%4s |%8s |%3s |%10s |%20s |%10s",
                             "roomcode", "roomname", "beds", "bedType", "maxOcc", "basePrice", "decor", "nextAvailableCheckIn");
                     System.out.println("------" + "-----------------------" + "---------" + "-----" + "------" + "-----" + "---------");
                     while(rs.next()) {
