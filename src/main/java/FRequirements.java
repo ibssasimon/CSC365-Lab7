@@ -543,7 +543,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
     }
 
     private StringBuilder r2InsertIntoTable(int CODE, String roomCode, String begin, String end, double rate, String last, int adults, int kids) {
-        StringBuilder sb1 = new StringBuilder("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, Lastname, Adults, Kids) VALUES ");
+        StringBuilder sb1 = new StringBuilder("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, Adults, Kids) VALUES ");
         sb1.append("(");
         sb1.append(CODE);
         sb1.append(",");
