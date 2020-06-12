@@ -290,7 +290,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
     }
 
     // TODO(ibssasimon): FR2
-    public void FR2() {
+    public void FR2(Scanner reader) {
         // Gather user input for FR2
         String first;
         String last;
@@ -302,22 +302,20 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         String bedType = "";
         double rate = 0.0;
         System.out.println("Please fill out the information below to complete your reservation request.");
-        Scanner scan = new Scanner(System.in);
         System.out.println("First Name?: ");
-        first = scan.nextLine();
+        first = reader.nextLine();
         System.out.println("Last Name?: ");
-        last = scan.nextLine();
+        last = reader.nextLine();
         System.out.println("Room Code?: ");
-        roomCode = scan.nextLine();
+        roomCode = reader.nextLine();
         System.out.println("Begin date? (YYYY-MM-DD): ");
-        begin = scan.nextLine();
+        begin = reader.nextLine();
         System.out.println("End date? (YYYY-MM-DD): ");
-        end = scan.nextLine();
+        end = reader.nextLine();
         System.out.println("Number of children?: ");
-        kids = scan.nextInt();
+        kids = reader.nextInt();
         System.out.println("Number of adults?: ");
-        adults = scan.nextInt();
-        scan.close();
+        adults = reader.nextInt();
 
 
         /*
@@ -493,6 +491,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         return CODE;
     }
     private void updateUserSuccess(String first, String last, String RoomCode, String bedType, String begin, String end, int adults, int kids) {
+        System.out.println("\n");
         System.out.println("Succcessfully added reservation with following info: ");
         System.out.println("First Name: " + first);
         System.out.println("LastName: " + last);
@@ -539,6 +538,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         }
     }
     private void updateUserFailure() {
+        System.out.println("\n");
         System.out.println("Could not add reservation (room occupied). Please try another set of options.");
     }
 

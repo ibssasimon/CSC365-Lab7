@@ -32,7 +32,7 @@ public class InnReservations {
             break;
         case 2:
             System.out.println("Proceeding to Make a Reservation...");
-            fr.FR2();
+            fr.FR2(reader);
             break;
         case 3:
             System.out.println("Proceeding to Change Reservation...");
@@ -52,5 +52,6 @@ public class InnReservations {
             break;
       }
     }
+    reader.close();
   }
 }
