@@ -141,7 +141,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
     // TODO(louiseibuna): FR3
     public void FR3() {
-        //TODO
+        System.out.println("TODO");
     }
 
     // TODO(ibssasimon): FR2
