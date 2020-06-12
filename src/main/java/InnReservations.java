@@ -9,9 +9,10 @@ public class InnReservations {
     FRequirements fr = new FRequirements();
     fr.setupTables();
     int selection = 0;
+    System.out.println("Hello! We are Simon and Louise and we are the Inn Managers. Please refer to the options:");
 
     while(selection != -1) {
-      System.out.println("Hello! We are Simon and Louise and we are the Inn Managers. Please refer to the options:");
+      System.out.println("\n");
       System.out.println("1: Rooms and Rates");
       System.out.println("2: Make a Reservation");
       System.out.println("3: Change Reservation");

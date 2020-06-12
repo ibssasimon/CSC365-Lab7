@@ -62,7 +62,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             Connection conn = establishConnection();
 
             // build sql query using static String object
-            String q = "with rev as (select Room, round(sum(case when month(Checkout) = 1 then datediff(Checkout, CheckIn) * rate else 0 end),0) as January,round(sum(case when month(Checkout) = 2 then datediff(Checkout, CheckIn) * rate else 0 end),0) as February,round(sum(case when month(Checkout) = 3 then datediff(Checkout, CheckIn) * rate else 0 end),0) as March, round(sum(case when month(Checkout) = 4 then datediff(Checkout, CheckIn) * rate else 0 end),0) as April, round(sum(case when month(Checkout) = 5 then datediff(Checkout, CheckIn) * rate else 0 end),0) as May, round(sum(case when month(Checkout) = 6 then datediff(Checkout, CheckIn) * rate else 0 end),0) as June, round(sum(case when month(Checkout) = 7 then datediff(Checkout, CheckIn) * rate else 0 end),0) as July, round(sum(case when month(Checkout) = 8 then datediff(Checkout, CheckIn) * rate else 0 end),0) as August, round(sum(case when month(Checkout) = 9 then datediff(Checkout, CheckIn) * rate else 0 end),0) as September, round(sum(case when month(Checkout) = 10 then datediff(Checkout, CheckIn) * rate else 0 end),0) as October,round(sum(case when month(Checkout) = 11 then datediff(Checkout, CheckIn) * rate else 0 end),0) as November, round(sum(case when month(Checkout) = 12 then datediff(Checkout, CheckIn) * rate else 0 end),0) as December, round(sum(datediff(Checkout, Checkin) * rate),0) as Annual from lab7_reservations group by Room ) select Room, January, February, March, April, May, June, July, August, September, October, November, December, Annual from rev union select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;";
+            String q = "with rev as (select Room, round(sum(case when month(Checkout) = 1 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as January,round(sum(case when month(Checkout) = 2 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as February,round(sum(case when month(Checkout) = 3 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as March, round(sum(case when month(Checkout) = 4 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as April, round(sum(case when month(Checkout) = 5 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as May, round(sum(case when month(Checkout) = 6 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as June, round(sum(case when month(Checkout) = 7 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as July, round(sum(case when month(Checkout) = 8 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as August, round(sum(case when month(Checkout) = 9 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as September, round(sum(case when month(Checkout) = 10 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as October,round(sum(case when month(Checkout) = 11 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as November, round(sum(case when month(Checkout) = 12 then datediff(day, Checkout, CheckIn) *-1 * rate else 0 end),0) as December, round(sum(datediff(day, Checkout, Checkin) *-1 * rate),0) as Annual from lab7_reservations group by Room ) select Room, January, February, March, April, May, June, July, August, September, October, November, December, Annual from rev union select 'Total', sum(January), sum(February), sum(March), sum(April), sum(May), sum(June), sum(July), sum(August),sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev;";
 
 
 
@@ -88,7 +88,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
 
 
-                    System.out.format("%s %s %s %s %s %s %s %s %s %s %s %s %s %s", room, january, february, march, april, may, june, july, august, september, october, november, december, annual);
+                    System.out.format("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", room, january, february, march, april, may, june, july, august, september, october, november, december, annual);
 
 
                 }
@@ -353,7 +353,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                 // build unique CODE(11)
                 int CODE = generateCode();
                 try (Statement randStat = conn.createStatement()) {
-                    ResultSet codes = randStat.executeQuery("SELECT max(CODE) from lab7_reservations;");
+                    ResultSet codes = randStat.executeQuery("SELECT max(CODE) as CODE from lab7_reservations;");
                     while(codes.next()) {
                         String code = codes.getString("CODE");
                         CODE = Integer.parseInt(code);
@@ -580,8 +580,11 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
             try (Statement st = c.createStatement()) {
                 // DDL
-
+                st.execute("drop table if exists lab7_reservations;");
                 st.execute("drop table if exists lab7_rooms;");
+
+
+
                 st.execute("create table lab7_rooms (RoomCode char(5) PRIMARY KEY,\nRoomName varchar(30),\nBeds int(11),\nbedType varchar(8),\nmaxOcc int(11),\nbasePrice float,\ndecor varchar(20),\nPRIMARY KEY(RoomCode),\nUNIQUE(RoomName)\n);");
                 st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('AOB', 'Abscond or bolster', 2, 'Queen', 4, 175, 'traditional');");
                 st.execute("INSERT INTO lab7_rooms (RoomCode, RoomName, Beds, bedType, maxOcc, basePrice, decor) VALUES('CAS', 'Convoke and sanguine', 2, 'King', 4, 175, 'traditional');");
@@ -592,8 +595,6 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
 
 
-
-                st.execute("drop table if exists lab7_reservations;");
                 st.execute("create table lab7_reservations (\nCODE int(11),\nRoom char(5),\nCheckIn DATE,\nCheckOut DATE,\nRate float,\nLastName varchar(15),\nFirstName varchar(15),\nAdults int(11),\nKids int(11),\n PRIMARY KEY(CODE),\n FOREIGN KEY(Room) references lab7_rooms(RoomCode)\n);");
                 st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10105, 'HBB', '2010-10-23', '2010-10-25', 100, 'SELBIG', 'CONRAD', 1, 0);");
                 st.execute("INSERT INTO lab7_reservations (CODE, Room, CheckIn, CheckOut, Rate, LastName, FirstName, Adults, Kids) VALUES(10183, 'IBD', '2010-09-19', '2010-09-20', 150, 'GABLER', 'DOLLIE', 2, 0);");
