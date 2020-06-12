@@ -130,11 +130,10 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
                     System.out.println("No reservation code found. Please try again.");
                     return;
                 }
+            }
 
-
-            // check results using ResultSet, NOTE: iterate using rs.next()
-            } 
-        } catch (SQLException e) {
+            // check results using ResultSet, NOTE: iterate using rs.next() 
+         }catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -142,7 +141,66 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
     // TODO(louiseibuna): FR3
     public void FR3() {
-        System.out.println("TODO");
+        Scanner scan = new Scanner(System.in);
+        int rsvpCode;
+        String first;
+        String last;
+        String roomCode;
+        String begin;
+        String end;
+        int kids;
+        int adults;
+        System.out.println("Enter RSVP code you would like to update: ");
+        rsvpCode = scan.nextInt();
+
+        System.out.println("Please fill out the information below to complete your reservation request.");
+        System.out.println("First Name?: ");
+        first = scan.nextLine();
+        System.out.println("Last Name?: ");
+        last = scan.nextLine();
+        System.out.println("Begin date? (YYYY-MM-DD): ");
+        begin = scan.nextLine();
+        System.out.println("End date? (YYYY-MM-DD): ");
+        end = scan.nextLine();
+        System.out.println("Number of children?: ");
+        kids = scan.nextInt();
+        System.out.println("Number of adults?: ");
+        adults = scan.nextInt();
+        scan.close();
+
+
+
+
+
+        try {
+            Connection conn = establishConnection();
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("select CODE from lab7_reservations WHERE CODE =");
+            sb.append(rsvpCode);
+            sb.append(";");
+
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rs = st.executeQuery(sb.toString());
+                if(!rs.next()) {
+                    // empty set
+                    System.out.println("No existing reservation under that code: " + rsvpCode);
+                } else {
+                    // we have a reservation under this code, we need to alter it
+                    while(rs.next()) {
+                        // if we have a non conflicting set of dates
+                        
+                        // alter table lab7_reservations (.....) values (rsvpCode, first, last, begin, end, adults, kids)
+                    }
+                }
+                
+            } catch(SQLException e) {
+                e,printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // TODO(ibssasimon): FR2
@@ -286,7 +344,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             StringBuilder sb = new StringBuilder("with roomAvailability as ( ");
             sb.append("select room, greatest(curdate(), max(checkout)) as nextAvailableCheckIn");
             sb.append("from lab7_reservations res");
-            sb.append("group by room");
+            sb.append("group by room")
 
             sb.append("select roomcode, roomname, beds, bedtype, maxocc, baseprice, decor, nextAvailableCheckIn ");
             sb.append("from lab7_rooms rooms");
