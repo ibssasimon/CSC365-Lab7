@@ -133,7 +133,8 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
 
             // check results using ResultSet, NOTE: iterate using rs.next()
-        } catch (final SQLException e) {
+            } 
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -285,7 +286,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             StringBuilder sb = new StringBuilder("with roomAvailability as ( ");
             sb.append("select room, greatest(curdate(), max(checkout)) as nextAvailableCheckIn");
             sb.append("from lab7_reservations res");
-            sb.append("group by room")
+            sb.append("group by room");
 
             sb.append("select roomcode, roomname, beds, bedtype, maxocc, baseprice, decor, nextAvailableCheckIn ");
             sb.append("from lab7_rooms rooms");
