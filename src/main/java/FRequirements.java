@@ -144,13 +144,127 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
     }
 
     // TODO(louiseibuna): FR3
-    public void FR3() {
-        System.out.println("TODO");
+    public void FR3(Scanner reader) {
+        int rsvpCode;
+        String first;
+        String last;
+        String begin;
+        String end;
+        String kids;
+        String adults;
+        System.out.println("Enter RSVP code you would like to update: ");
+        rsvpCode = reader.nextInt();
+
+
+
+
+        try {
+            Connection conn = establishConnection();
+            boolean isUpdatedFirst = false;
+            StringBuilder sb = new StringBuilder();
+            sb.append("select CODE from lab7_reservations WHERE CODE =");
+            sb.append(rsvpCode);
+            sb.append(";");
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rs = stmt.executeQuery(sb.toString());
+                if(!rs.next()) {
+                    // empty set
+                    System.out.println("No existing reservation under that code: " + rsvpCode);
+                } else {
+                    // we have a reservation under this code, we need to alter it
+                    System.out.println("Please fill out the information below to complete your reservation request.");
+                    String newline = reader.nextLine();
+
+                    System.out.println("First Name? (or no change): ");
+                    first = reader.nextLine();
+                    System.out.println("Last Name? (or no change): ");
+                    last = reader.nextLine();
+                    System.out.println("Begin date? (or no change) (YYYY-MM-DD): ");
+                    begin = reader.nextLine();
+                    System.out.println("End date? (or no change) (YYYY-MM-DD): ");
+                    end = reader.nextLine();
+                    System.out.println("Number of children? (or no change): ");
+                    kids = reader.nextLine();
+                    System.out.println("Number of adults? (or no change): ");
+                    adults = reader.nextLine();
+
+
+                        // if we have a non conflicting set of dates
+                      StringBuilder sb1 = new StringBuilder("update lab7_reservations set CODE = CODE");
+
+                     /* sb1.append("FirstName = '");
+                        sb1.append(first);
+                        sb1.append("'");
+                        sb1.append(", LastName = '");
+                        sb1.append(last);
+                        sb1.append("'");
+                        sb1.append(", CheckIn = '");
+                        sb1.append(begin);
+                        sb1.append("'");
+                        sb1.append(", Checkout = '");
+                        sb1.append(end);
+                        sb1.append("'");
+                        sb1.append(", Adults = ");
+                        sb1.append(adults);
+                        sb1.append(", Kids = ");
+                        sb1.append(kids);*/
+
+
+                      if(!first.equalsIgnoreCase("no change")) {
+                          sb1.append(", FirstName = '");
+                          sb1.append(first);
+                          sb1.append("'");
+                      }
+
+                      if(!last.equalsIgnoreCase("no change")) {
+                               sb1.append(", LastName = '");
+                               sb1.append(last);
+                               sb1.append("'");
+                      }
+                      if (!begin.equalsIgnoreCase("no change")) {
+                               sb1.append(", CheckIn = '");
+                               sb1.append(begin);
+                               sb1.append("'");
+                      }
+
+                      if(!end.equalsIgnoreCase("no change")) {
+                               sb1.append(", Checkout = '");
+                               sb1.append(end);
+                               sb1.append("'");
+                      }
+
+                      if(!adults.equalsIgnoreCase("no change")) {
+                          int adultsTemp = Integer.parseInt(adults);
+                               sb1.append(", Adults = ");
+                               sb1.append(adultsTemp);
+                      }
+
+                      if(!kids.equalsIgnoreCase("no change")) {
+                          int kidsTemp = Integer.parseInt(kids);
+                               sb1.append(", Kids = ");
+                               sb1.append(kidsTemp);
+                      }
+
+                        sb1.append(" WHERE CODE = ");
+                        sb1.append(rsvpCode);
+                        sb1.append(";");
+
+
+                        stmt.execute(sb1.toString());
+                        System.out.println("Successfully updated reservation");
+                }
+
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // TODO(ibssasimon): FR2
-    public void FR2() {
-        // Gather user input for FR2
+    public void FR2(Scanner reader) {
         String first;
         String last;
         String roomCode;
@@ -161,28 +275,26 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         String bedType = "";
         double rate = 0.0;
         System.out.println("Please fill out the information below to complete your reservation request.");
-        Scanner scan = new Scanner(System.in);
         System.out.println("First Name?: ");
-        first = scan.nextLine();
+        first = reader.nextLine();
         System.out.println("Last Name?: ");
-        last = scan.nextLine();
+        last = reader.nextLine();
         System.out.println("Room Code?: ");
-        roomCode = scan.nextLine();
+        roomCode = reader.nextLine();
         System.out.println("Begin date? (YYYY-MM-DD): ");
-        begin = scan.nextLine();
+        begin = reader.nextLine();
         System.out.println("End date? (YYYY-MM-DD): ");
-        end = scan.nextLine();
+        end = reader.nextLine();
         System.out.println("Number of children?: ");
-        kids = scan.nextInt();
+        kids = reader.nextInt();
         System.out.println("Number of adults?: ");
-        adults = scan.nextInt();
-        scan.close();
+        adults = reader.nextInt();
 
 
         /*
-        * QUESTIONS:
-        *
-        * */
+         * QUESTIONS:
+         *
+         * */
         // select statement to see if there are any current reservations in that roomcode
         try {
             Connection conn = establishConnection();
@@ -300,9 +412,9 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
             // execute SQL
             try(PreparedStatement pst = conn.prepareStatement(sb.toString())) {
                 try(ResultSet rs = pst.executeQuery()) {
-                    System.out.format("%6s |%30s |%4s |%8s |%3s |%10s |%20s |%10s",
-                            "roomcode", "roomname", "beds", "bedType", "maxOcc", "basePrice", "decor", "nextAvailableCheckIn");
-                    System.out.println("------" + "-----------------------" + "---------" + "-----" + "------" + "-----" + "---------");
+                    System.out.format("%6s |%20s |%7s |%11s |%5s |%11s |%12s |%10s",
+                            "roomcode", "roomname", "beds", "bedType", "maxOcc", "basePrice", "decor", "nextAvailableCheckIn\n");
+                    System.out.println("-------------------------------------------------------------------------------------------------------------");
                     while(rs.next()) {
                         final String RoomCode = rs.getString("roomcode");
                         final String RoomName = rs.getString("roomname");
@@ -330,6 +442,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
         return CODE;
     }
     private void updateUserSuccess(String first, String last, String RoomCode, String bedType, String begin, String end, int adults, int kids) {
+        System.out.println("\n");
         System.out.println("Succcessfully added reservation with following info: ");
         System.out.println("First Name: " + first);
         System.out.println("LastName: " + last);
