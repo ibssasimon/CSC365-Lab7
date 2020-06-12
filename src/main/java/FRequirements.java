@@ -141,39 +141,7 @@ sum(September), sum(October), sum(November), sum(December), sum(Annual) from rev
 
     // TODO(louiseibuna): FR3
     public void FR3() {
-        String first;
-        String last;
-        String roomCode;
-        String begin;
-        String end;
-        int kids;
-        int adults;
-        String bedType = "";
-        double rate = 0.0;
-        System.out.println("Please fill out the information below to complete your reservation request.");
-        Scanner scan = new Scanner(System.in);
-        System.out.println("First Name?: ");
-        first = scan.nextLine();
-        System.out.println("Last Name?: ");
-        last = scan.nextLine();
-        System.out.println("Room Code?: ");
-        roomCode = scan.nextLine();
-        System.out.println("Begin date? (YYYY-MM-DD): ");
-        begin = scan.nextLine();
-        System.out.println("End date? (YYYY-MM-DD): ");
-        end = scan.nextLine();
-        System.out.println("Number of children?: ");
-        kids = scan.nextInt();
-        System.out.println("Number of adults?: ");
-        adults = scan.nextInt();
-        scan.close();
-        try {
-            
-            }
-            
-        } catch (final SQLException e) {
-            e.printStackTrace();
-        }
+        //TODO
     }
 
     // TODO(ibssasimon): FR2
